@@ -2,47 +2,69 @@ import flet as ft
 
 from utils.config import TEXT_COLOR, CONTAINER_BG_COLOR, CONTAINER_DROP_SHADOW
 
+def build_task_content(title, start_date, end_date, expanded):
+    column_items = [
+        ft.Text(title, size=40, color=TEXT_COLOR,
+            text_align=ft.TextAlign.CENTER),
+        ft.Row([
+            ft.Text(f"Start: {start_date}", size=20, color=TEXT_COLOR),
+            ft.Text(f"End: {end_date}", size=20, color=TEXT_COLOR)
+        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+    ]
 
+    if expanded:
+        column_items.append(ft.Divider())
+        column_items.append(ft.Text("Progress bar", size=12))
+        column_items.append(ft.Text("Time Remaining", size=12))
 
-def create_task_box(page, title, start_date, end_date):
+    return column_items
+
+def handle_task_click(task_container, page, task_content, title, start_date, end_date):
     expanded = False
 
-    def on_box_click(e):
+    def on_click(e):
         nonlocal expanded
         expanded = not expanded
-        test_box.height = 220 if expanded else 120
-        update_box_content()
-
-    def update_box_content():
-        column_items = [
-            ft.Text(title, size=40, color=TEXT_COLOR,
-                text_align=ft.TextAlign.CENTER),
-            ft.Row([
-                ft.Text(f"Start: {start_date}", size=20, color=TEXT_COLOR),
-                ft.Text(f"End: {end_date}", size=20, color=TEXT_COLOR)
-            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
-        ]
-
-        if expanded:
-            column_items.append(ft.Divider())
-            column_items.append(ft.Text("Progress bar", size=12))
-            column_items.append(ft.Text("Time Remaining", size=12))
-
-        box_content.controls = column_items
+        task_container.height = 220 if expanded else 120
+        column_items = build_task_content(title, start_date, end_date, expanded)
+        task_content.controls = column_items
         page.update()
 
-    box_content = ft.Column([], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-    update_box_content()
+    return on_click
 
-    test_box = ft.Container(
-        content=box_content,
+
+def create_task_container(page, title, start_date, end_date):
+    task_content = ft.Column(
+        controls=[],
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER
+    )
+
+    task_container = ft.Container(
+        content=task_content,
         height=120,
         width=600,
         border_radius=10,
         bgcolor=CONTAINER_BG_COLOR,
         shadow=ft.BoxShadow(blur_radius=5, color=CONTAINER_DROP_SHADOW),
-        padding=15,
-        on_click=on_box_click
+        padding=15
     )
 
-    return test_box
+    column_items = build_task_content(
+        title,
+        start_date,
+        end_date,
+        expanded=False
+    )
+
+    task_content.controls = column_items
+
+    task_container.on_click = handle_task_click(
+        task_container,
+        page,
+        task_content,
+        title,
+        start_date,
+        end_date
+    )
+
+    return task_container
