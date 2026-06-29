@@ -12,7 +12,7 @@ def create_title_field():
 def create_start_date_field():
     date_picker = helpers.create_date_picker_control()
 
-    initial_date_field = ft.TextField(
+    date_field = ft.TextField(
         label="Start Date",
         value=datetime.now().strftime("%Y-%m-%d"),
         hint_text="YYYY-MM-DD",
@@ -21,12 +21,18 @@ def create_start_date_field():
 
     def on_date_selected(e):
         if date_picker.value:
-            initial_date_field.value = date_picker.value.strftime("%Y-%m-%d")
-            initial_date_field.update()
+            date_field.value = date_picker.value.strftime("%Y-%m-%d")
+            date_field.update()
 
     date_picker.on_change = on_date_selected
 
-    return initial_date_field, date_picker
+    cal_button = ft.IconButton(
+        icon=ft.Icons.CALENDAR_TODAY,
+        on_click=lambda e: setattr(date_picker, 'open', True) or date_picker.update()
+    )
+    row = ft.Row([date_field, cal_button])
+
+    return row, date_picker
 
 def create_end_date_field():
     date_picker = helpers.create_date_picker_control()
@@ -43,7 +49,13 @@ def create_end_date_field():
 
     date_picker.on_change = on_date_selected
 
-    return date_field, date_picker
+    cal_button = ft.IconButton(
+        icon=ft.Icons.CALENDAR_TODAY,
+        on_click=lambda e: setattr(date_picker, 'open', True) or date_picker.update()
+    )
+    row = ft.Row([date_field, cal_button])
+
+    return row, date_picker
 
 
 def create_input_dialog(title_field, start_date_field, end_date_field, cancel_handler, add_handler):

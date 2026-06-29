@@ -10,14 +10,14 @@ def cancel_dialog_button(page):
 
 def add_dialog_button(page,
     title_field,
-    start_date_field,
-    end_date_field,
+    start_date_row,
+    end_date_row,
     tasks_column,
     layout):
     def handler(e):
         task_title = title_field.value
-        start_date_str = start_date_field.value
-        end_date_str = end_date_field.value
+        start_date_str = start_date_row.controls[0].value
+        end_date_str = end_date_row.controls[0].value
 
         try:
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
@@ -29,11 +29,13 @@ def add_dialog_button(page,
         data.add_task(task_title, start_date, end_date)
         layout.render_tasks(page, data.get_tasks(), tasks_column)
 
+        title_field.value = ""
+        # start_date_row.controls[0].value = ""
+        end_date_row.controls[0].value = ""
+
+
         if page.overlay:
             page.overlay[0].open = False
-        title_field.value = ""
-        start_date_field.value = ""
-        end_date_field.value = ""
         page.update()
     return handler
 
