@@ -1,5 +1,5 @@
 import flet as ft
-
+from interface import progress
 from utils.config import TEXT_COLOR, CONTAINER_BG_COLOR, CONTAINER_DROP_SHADOW
 
 def build_task_content(title, start_date, end_date, expanded):
@@ -14,7 +14,7 @@ def build_task_content(title, start_date, end_date, expanded):
 
     if expanded:
         column_items.append(ft.Divider())
-        column_items.append(ft.Text("Progress bar", size=12))
+        column_items.append(progress.build_progress_bar(start_date, end_date))
         column_items.append(ft.Text("Time Remaining", size=12))
 
     return column_items
